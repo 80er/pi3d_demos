@@ -46,3 +46,6 @@ documentation/Makefile
 # path to pi3d specific to machine
 #demo.py
 
+d3dcompiler_47.dll
+libEGL.dll
+libGLESv2.dll

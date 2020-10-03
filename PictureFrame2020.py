@@ -14,6 +14,8 @@ USING exif info to rotate images
 '''
 import os
 import time
+import datetime
+from datetime import date
 import random
 import math
 import demo
@@ -127,7 +129,7 @@ def tex_load(pic_num, iFiles, size=None):
     if config.VERBOSE:
         print('''Couldn't load file {} giving error: {}'''.format(fname, e))
     tex = None
-  return tex
+  return tex, dt
 
 def tidy_name(path_name):
     name = os.path.basename(path_name)
@@ -343,7 +345,12 @@ textblock = pi3d.TextBlock(x=-DISPLAY.width * 0.5 + 50, y=-DISPLAY.height * 0.4,
                           text_format="{}".format(" "), size=0.99, 
                           spacing="F", space=0.02, colour=(1.0, 1.0, 1.0, 1.0))
 text.add_text_block(textblock)
-
+text_exif = pi3d.PointText(font, CAMERA, max_chars=200, point_size=50)
+textblock_exif_date = pi3d.TextBlock(x=-DISPLAY.width * 0.5 + DISPLAY.width - 240, y=-DISPLAY.height * 0.4,
+                          z=0.1, rot=0.0, char_count=199,
+                          text_format="{}".format(" "), size=0.99, 
+                          spacing="F", space=0.02, colour=(1.0, 1.0, 1.0, 1.0))
+text_exif.add_text_block(textblock_exif_date)
 
 num_run_through = 0
 while DISPLAY.loop_running():
@@ -353,10 +360,11 @@ while DISPLAY.loop_running():
       nexttm = tm + time_delay
       sbg = sfg
       sfg = None
+      dt = None
       start_pic_num = next_pic_num
       while sfg is None: # keep going through until a usable picture is found
         pic_num = next_pic_num
-        sfg = tex_load(pic_num, iFiles, (DISPLAY.width, DISPLAY.height))
+        sfg, dt = tex_load(pic_num, iFiles, (DISPLAY.width, DISPLAY.height))
         next_pic_num += 1
         if next_pic_num >= nFi:
           num_run_through += 1
@@ -375,6 +383,15 @@ while DISPLAY.loop_running():
         textblock.set_text(text_format="{}".format(" "))
         textblock.colouring.set_colour(alpha=0.0)
         text.regen()
+      if config.SHOW_EXIF_DATE:
+        if dt is not None and dt > 0.0:
+          realtime = date.fromtimestamp(dt)
+          textblock_exif_date.set_text(text_format="{}".format(realtime.strftime("%d.%m.%y")))
+          text_exif.regen()
+        else:
+          textblock_exif_date.set_text(text_format="{}".format("no date"))
+          text_exif.regen()
+        
     if sfg is None:
       sfg = tex_load(config.NO_FILES_IMG, 1, (DISPLAY.width, DISPLAY.height))
       sbg = sfg
@@ -437,7 +454,7 @@ while DISPLAY.loop_running():
       text.regen()
 
   text.draw()
-
+  text_exif.draw()
   if config.KEYBOARD:
     k = kbd.read()
     if k != -1:

@@ -47,6 +47,7 @@ parse.add_argument("-y", "--subdirectory",  default="", help="subdir of pic_dir 
 parse.add_argument("-z", "--blur_zoom",     default=1.0, type=float, help="must be >= 1.0 which expands the backgorund to just fill the space around the image")
 parse.add_argument(      "--auto_resize",   default=True, type=str_to_bool, help="set this to false if you want to use 4K resolution on Raspberry Pi 4. You should ensure your images are the correct size for the display")
 parse.add_argument(      "--delay_exif",    default=True, type=str_to_bool, help="set this to false if there are problems with date filtering - it will take a long time for initial loading if there are many images.")
+parse.add_argument(      "--show_exif_date",    default=True, type=str_to_bool, help="")
 args = parse.parse_args()
 
 
@@ -73,6 +74,7 @@ PIC_DIR = args.pic_dir
 SHADER = args.shader
 RESHUFFLE_NUM = args.reshuffle_num
 SHOW_NAMES_TM = args.show_names_tm
+SHOW_EXIF_DATE = args.show_exif_date
 FIT = args.fit
 KENBURNS = args.kenburns
 TIME_DELAY = args.time_delay
